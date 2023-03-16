@@ -1,0 +1,1 @@
+export { EdgeConfigWrapper } from './EdgeConfigWrapper';
