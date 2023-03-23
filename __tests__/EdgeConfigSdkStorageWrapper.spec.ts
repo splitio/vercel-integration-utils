@@ -8,9 +8,9 @@ const mockedDefaultOptions = {
 }
 
 const mockedConnectionStringOptions = {
-  edgeConfigId: 'edgeConfigId',
   edgeConfigKey: 'edgeConfigKey',
-  apiToken: 'apiToken'
+  edgeConfigId: 'edgeConfigId',
+  edgeConfigToken: 'edgeConfigToken'
 }
 
 const mockedData = {

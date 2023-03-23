@@ -7,23 +7,23 @@ import { createConnectionString } from "./VercelApi";
 /**
  * Creates an instance of EdgeConfigSdkStorageWrapper that wraps around the PluggableStorageWrapper interface.
  *
+ * @param {Object} options - The configuration options for the EdgeConfigApiStorageWrapper instance.
  * @param {string} options.edgeConfigKey - Item key used to get Split data from edge config.
- * @param {string} [options.edgeConfigId] - (Optional) The ID of the edge config.
- * @param {string} [options.apiToken] - (Optional) Vercel API token.
+ * @param {string} [options.edgeConfigId] - The ID of the edge config.
+ * @param {string} [options.edgeConfigToken] - The edge config related token.
  * @returns {IPluggableStorageWrapper} - An instance of EdgeConfigSdkStorageWrapper that wraps around the PluggableStorageWrapper interface.
  */
 export function EdgeConfigSdkStorageWrapper(options: {
   edgeConfigKey: string;
   edgeConfigId?: string;
-  apiToken?: string;
+  edgeConfigToken?: string;
 }): IPluggableStorageWrapper {
   let data: Data;
 
   let readEdgeConfig = get
-
-  const { edgeConfigId, apiToken, edgeConfigKey } = options
-  if(edgeConfigId && apiToken) {
-    const edgeConfigConnectionString = createConnectionString(edgeConfigId, apiToken);
+  const { edgeConfigKey, edgeConfigId, edgeConfigToken } = options
+  if(edgeConfigId && edgeConfigToken) {
+    const edgeConfigConnectionString = createConnectionString(edgeConfigId, edgeConfigToken);
     const edgeConfig = createEdgeConfigClient(edgeConfigConnectionString);
     readEdgeConfig = edgeConfig.get;
   }

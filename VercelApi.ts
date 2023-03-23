@@ -35,6 +35,17 @@ export async function fetchEdgeConfig(edgeConfigId: string, edgeConfigKey: strin
 
 }
 
+/**
+ * Upsert edge config for a Vercel project.
+ *
+ * @param {string} edgeConfigId - The ID of the edge config to fetch.
+ * @param {string} edgeConfigKey - The key of the edge config to fetch.
+ * @param {string} teamId - The ID of the team that owns the project.
+ * @param {string} token - The Vercel API token to use for authentication.
+ * @param {Data} data - The data to be stored.
+ * @returns {Promise<Void>} - A Promise that resolves to the edge config data.
+ * @throws {Error} - Throws an error if the request fails or the response status is not OK.
+ */
 export async function upsertEdgeConfig(edgeConfigId: string, edgeConfigKey: string, teamId: string, token: string, data: Data): Promise<void> {
   const teamIdQuery = teamId ? `?teamId=${teamId}` : '';
   await fetch(

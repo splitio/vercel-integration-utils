@@ -7,23 +7,23 @@ import { fetchEdgeConfig, upsertEdgeConfig } from "./VercelApi";
  * Creates an instance of EdgeConfigApiStorageWrapper that wraps around the PluggableStorageWrapper interface.
  *
  * @param {Object} options - The configuration options for the EdgeConfigApiStorageWrapper instance.
- * @param {string} options.edgeConfigId - The ID of the edge config.
- * @param {string} options.teamId - The ID of the team associated with the edge config.
- * @param {string} options.apiToken - Vercel API token.
  * @param {string} options.edgeConfigKey - Item key used to get Split data from edge config.
+ * @param {string} options.edgeConfigId - The ID of the edge config.
+ * @param {string} options.apiToken - Vercel API token.
+ * @param {string} options.teamId - The ID of the team associated with the edge config.
  * @param {Function} options.waitUntil - A function that waits for a promise to be resolved.
  * @returns {IPluggableStorageWrapper} - An instance of EdgeConfigApiStorageWrapper that wraps around the PluggableStorageWrapper interface.
  */
 export function EdgeConfigApiStorageWrapper(options: {
-  edgeConfigId: string;
-  teamId: string;
-  apiToken: string;
   edgeConfigKey: string;
+  edgeConfigId: string;
+  apiToken: string;
+  teamId: string;
   waitUntil: (promise: Promise<any>) => void;
 }): IPluggableStorageWrapper {
   // the flag definitions item
   let data: Data;
-  const { edgeConfigId, edgeConfigKey, teamId, apiToken } = options;
+  const { edgeConfigKey, edgeConfigId, teamId, apiToken } = options;
 
   return {
     // No-op. No need to connect to Edge Config

@@ -3,9 +3,9 @@ import { EdgeConfigApiStorageWrapper } from '../EdgeConfigApiStorageWrapper'
 
 const mockedOptions = {
   edgeConfigId: 'edgeConfigId',
-  teamId: 'teamId',
-  apiToken: 'apiToken',
   edgeConfigKey: 'edgeConfigKey',
+  apiToken: 'apiToken',
+  teamId: 'teamId',
   waitUntil: jest.fn()
 }
 jest.mock('../VercelApi', () => { return {
