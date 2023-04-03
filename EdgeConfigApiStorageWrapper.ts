@@ -41,16 +41,16 @@ export function EdgeConfigApiStorageWrapper(options: {
         throw new Error("API Token not provided");
       }
 
-      fetchEdgeConfig(edgeConfigId, edgeConfigKey, teamId, apiToken).then( response => {
+      await fetchEdgeConfig(edgeConfigId, edgeConfigKey, teamId, apiToken).then( response => {
         data = response;
+        console.log("read", data);
       });
 
-      console.log("read", data);
     },
 
     // No-op. No need to disconnect from Edge Config stub
     async disconnect() {
-      console.log("disconnect", data);
+      console.log("EdgeConfig API disconnect", data);
 
       options.waitUntil(
         upsertEdgeConfig(edgeConfigId, edgeConfigKey, teamId, apiToken, data).then(() => {

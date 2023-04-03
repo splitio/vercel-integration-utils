@@ -34,9 +34,11 @@ export async function EdgeConfigSynchronize(options: {
     debug: "ERROR",
   });
 
-  const ok = await synchronizer.execute();
+  return synchronizer.execute().then(() => {
+    console.log('Synchronization success');
+  },
+  () => {
+    console.log('Synchronization failed');
+  });
 
-  return new Response(
-    ok ? "Synchronization finished" : "Synchronization failed"
-  );
 }
