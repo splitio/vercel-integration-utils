@@ -1,4 +1,4 @@
-import { Data } from "./types";
+import { Data } from './types';
 import fetch from 'node-fetch'
 
 const VERCEL_API_URL = 'https://api.vercel.com/v1'
@@ -22,7 +22,7 @@ export async function fetchEdgeConfig(edgeConfigId: string, edgeConfigKey: strin
     }
   });
 
-  if (!response.ok) throw new Error("Could not read Edge Config");
+  if (!response.ok) throw new Error('Could not read Edge Config');
 
   if (response.status === 200) {
     const responseBody: any = await response.json();
@@ -55,13 +55,13 @@ export async function upsertEdgeConfig(edgeConfigId: string, edgeConfigKey: stri
     {
       headers: {
         Authorization: `Bearer ${token}`,
-        "content-type": "application/json",
+        'content-type': 'application/json',
       },
-      method: "PATCH",
+      method: 'PATCH',
       body: JSON.stringify({
         items: [
           {
-            operation: "upsert",
+            operation: 'upsert',
             key: edgeConfigKey,
             value: data,
           },
@@ -72,9 +72,9 @@ export async function upsertEdgeConfig(edgeConfigId: string, edgeConfigKey: stri
     (response) => {
       if (!response.ok) {
         console.log(response)
-        throw new Error("Failed to synchronize Vercel");
+        throw new Error('Failed to synchronize Vercel');
       }
-      console.log("Vercel synchronized successfully");
+      console.log('Vercel synchronized successfully');
 
       return response.json().then((body) => {
         console.log(body);
