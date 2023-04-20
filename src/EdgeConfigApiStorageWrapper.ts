@@ -1,54 +1,61 @@
-import { IPluggableStorageWrapper } from "@splitsoftware/splitio-commons/src/storages/types";
-import { Data } from "./types";
-import { hasOwnProperty } from './utils'
-import { createClient as createEdgeConfigClient, get } from "@vercel/edge-config";
-import { createConnectionString } from "./VercelApi";
+import { Data } from './types';
+import { hasOwnProperty, unique } from './utils'
+import { fetchEdgeConfig, upsertEdgeConfig } from './VercelApi';
 
 /**
- * Creates an instance of EdgeConfigSdkStorageWrapper that wraps around the PluggableStorageWrapper interface.
+ * Creates an instance of EdgeConfigApiStorageWrapper that wraps around the PluggableStorageWrapper interface.
  *
  * @param {Object} options - The configuration options for the EdgeConfigApiStorageWrapper instance.
  * @param {string} options.edgeConfigKey - Item key used to get Split data from edge config.
- * @param {string} [options.edgeConfigId] - The ID of the edge config.
- * @param {string} [options.edgeConfigToken] - The edge config related token.
- * @returns {IPluggableStorageWrapper} - An instance of EdgeConfigSdkStorageWrapper that wraps around the PluggableStorageWrapper interface.
+ * @param {string} options.edgeConfigId - The ID of the edge config.
+ * @param {string} options.apiToken - Vercel API token.
+ * @param {string} options.teamId - The ID of the team associated with the edge config.
+ * @param {Function} options.waitUntil - A function that waits for a promise to be resolved.
+ * @returns {IPluggableStorageWrapper} - An instance of EdgeConfigApiStorageWrapper that wraps around the PluggableStorageWrapper interface.
  */
-export function EdgeConfigSdkStorageWrapper(options: {
+export function EdgeConfigApiStorageWrapper(options: {
   edgeConfigKey: string;
-  edgeConfigId?: string;
-  edgeConfigToken?: string;
-}): IPluggableStorageWrapper {
+  edgeConfigId: string;
+  apiToken: string;
+  teamId: string;
+  waitUntil: (promise: Promise<any>) => void;
+}) {
+  // the flag definitions item
   let data: Data;
+  const { edgeConfigKey, edgeConfigId, teamId, apiToken } = options;
 
-  let readEdgeConfig = get
-  const { edgeConfigKey, edgeConfigId, edgeConfigToken } = options
-  if(edgeConfigId && edgeConfigToken) {
-    const edgeConfigConnectionString = createConnectionString(edgeConfigId, edgeConfigToken);
-    const edgeConfig = createEdgeConfigClient(edgeConfigConnectionString);
-    readEdgeConfig = edgeConfig.get;
-  }
   return {
     // No-op. No need to connect to Edge Config
     async connect() {
-      console.log("EdgeConfig SDK connect");
+      console.log('EdgeConfig API connect');
+      data = {}; // reset from any previous runs
 
+      if (!edgeConfigId) {
+        throw new Error('Edge Config Id not provided');
+      }
       if (!edgeConfigKey) {
-        throw new Error("Edge Config Item Key not provided");
+        throw new Error('Edge Config Item Key not provided');
+      }
+      if (!apiToken) {
+        throw new Error('API Token not provided');
       }
 
-      const edgeConfigData = await readEdgeConfig<Data>(edgeConfigKey)
+      await fetchEdgeConfig(edgeConfigId, edgeConfigKey, teamId, apiToken).then( response => {
+        data = response;
+        console.log('read', data);
+      });
 
-      if (!edgeConfigData) {
-        console.log('Empty Edge Config');
-        data = {};
-      } else {
-        data = edgeConfigData;
-      }
     },
 
     // No-op. No need to disconnect from Edge Config stub
     async disconnect() {
-      data = {};
+      console.log('EdgeConfig API disconnect', data);
+
+      options.waitUntil(
+        upsertEdgeConfig(edgeConfigId, edgeConfigKey, teamId, apiToken, data).then(() => {
+          data = {};
+        })
+      )
     },
 
     /**
@@ -72,7 +79,8 @@ export function EdgeConfigSdkStorageWrapper(options: {
      * @returns {Promise<boolean>} A promise that resolves if the operation success, whether the key was added or updated.
      */
     async set(key: string, value: string) {
-      throw new Error("SET not implemented");
+      data[key] = value;
+      return true;
     },
 
     /**
@@ -84,7 +92,9 @@ export function EdgeConfigSdkStorageWrapper(options: {
      * @returns {Promise<string | null>} A promise that resolves with the previous value associated to the given `key`, or null if not set.
      */
     async getAndSet(key: string, value: string) {
-      throw new Error("GET AND SET not implemented");
+      const originalValue = data[key] ?? null;
+      data[key] = value;
+      return originalValue;
     },
 
     /**
@@ -95,7 +105,8 @@ export function EdgeConfigSdkStorageWrapper(options: {
      * @returns {Promise<boolean>} A promise that resolves if the operation success, whether the key existed and was removed or it didn't exist.
      */
     async del(key: string) {
-      throw new Error("DEL not implemented");
+      delete data[key];
+      return true;
     },
 
     /**
@@ -105,9 +116,10 @@ export function EdgeConfigSdkStorageWrapper(options: {
      * @param {string} prefix String prefix to match
      * @returns {Promise<string[]>} A promise that resolves with the list of keys that match the given `prefix`.
      */
-      async getKeysByPrefix(prefix: string) {
-        return Object.keys(data).filter((key) => key.startsWith(prefix));
-      },
+    async getKeysByPrefix(prefix: string) {
+      return Object.keys(data).filter((key) => key.startsWith(prefix));
+    },
+
     /**
      * Returns the values of all given `keys`.
      *
@@ -117,7 +129,7 @@ export function EdgeConfigSdkStorageWrapper(options: {
      * For every key that does not hold a string value or does not exist, null is returned.
      */
     async getMany(keys: string[]) {
-      return keys.map((key) => data[key] ?? null);
+      return keys.map((key) => (data && data[key]) ?? null);
     },
 
     /** Integer operations */
@@ -130,7 +142,13 @@ export function EdgeConfigSdkStorageWrapper(options: {
      * @returns {Promise<number>} A promise that resolves with the value of key after the increment.
      */
     async incr(key: string) {
-      throw new Error("INCR not implemented");
+      if (hasOwnProperty(data, key) && typeof data[key] === 'number') {
+        data[key] += 1;
+      } else {
+        data[key] = 1;
+      }
+
+      return data[key];
     },
 
     /**
@@ -141,7 +159,13 @@ export function EdgeConfigSdkStorageWrapper(options: {
      * @returns {Promise<number>} A promise that resolves with the value of key after the decrement.
      */
     async decr(key: string) {
-      throw new Error("DECR not implemented");
+      if (hasOwnProperty(data, key) && typeof data[key] === 'number') {
+        data[key] -= 1;
+      } else {
+        data[key] = -1;
+      }
+
+      return data[key];
     },
 
     /** Set operations */
@@ -170,7 +194,15 @@ export function EdgeConfigSdkStorageWrapper(options: {
      * @returns {Promise<boolean | void>} A promise that resolves if the operation success.
      */
     async addItems(key: string, items: string[]) {
-      throw new Error("ADD ITEMS not implemented");
+      const isSet = hasOwnProperty(data, key) && Array.isArray(data[key]);
+
+      if (isSet) {
+        data[key] = unique([...data[key], ...items]);
+      } else {
+        data[key] = unique([...items]);
+      }
+
+      return true;
     },
 
     /**
@@ -182,7 +214,13 @@ export function EdgeConfigSdkStorageWrapper(options: {
      * @returns {Promise<boolean | void>} A promise that resolves if the operation success. If key does not exist, the promise also resolves.
      */
     async removeItems(key: string, items: string[]) {
-      throw new Error("REMOVE ITEMS not implemented");
+      const isSet = hasOwnProperty(data, key) && Array.isArray(data[key]);
+
+      if (isSet) {
+        data[key] = data[key].filter((entry: string) => !items.includes(entry));
+      }
+
+      return true;
     },
 
     /**

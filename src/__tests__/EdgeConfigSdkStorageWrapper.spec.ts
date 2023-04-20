@@ -31,7 +31,7 @@ jest.mock('@vercel/edge-config', () => { return {
   get: jest.fn(() => mockedData)
 }});
 
-async function evaluate(storage) {
+async function evaluate(storage: any) {
     // Get method
     expect(await storage.get('key')).toBe('value');
     expect(await storage.get('key2')).toBe(null);
