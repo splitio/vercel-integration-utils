@@ -1,5 +1,5 @@
 import { SplitFactory, PluggableStorage, ErrorLogger } from '@splitsoftware/splitio-browserjs';
-import { EdgeConfigWrapper } from '@splitsoftware/edge-config-wrapper';
+import { EdgeConfigWrapper } from '@splitsoftware/vercel-integration-utils';
 
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 

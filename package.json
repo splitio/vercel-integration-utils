@@ -1,5 +1,5 @@
 {
-  "name": "@splitsoftware/edge-config-wrapper",
+  "name": "@splitsoftware/vercel-integration-utils",
   "version": "0.1.0",
   "description": "Split SDK wrapper to integrate with Vercel Edge Config",
   "main": "dist/cjs/index.js",
