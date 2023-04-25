@@ -2,11 +2,12 @@ import { SplitFactory, PluggableStorage, ErrorLogger } from '@splitsoftware/spli
 import { EdgeConfigWrapper } from '@splitsoftware/vercel-integration-utils';
 
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+// Request example: https://<HOST>/api/get-treatment?userKey=<USER_KEY>
+
+const SPLIT_NAME = 'test_split';
 
 // Run API route as an Edge function rather than a Serverless one, because the SDK uses Fetch API to flush data, which is available in Edge runtime but not in Serverless.
 export const config = { runtime: "edge" };
-
-const SPLIT_NAME = 'test_split';
 
 export default async function handler(req) {
   // Extract userKey from request query param
