@@ -10,8 +10,8 @@ const SPLIT_NAME = 'test_split';
 export const config = { runtime: "edge" };
 
 export default async function handler(req) {
-  // Extract userKey from request query param
-  const { searchParams } = new URL(req.url)
+  // Extract user key from request query param
+  const { searchParams } = new URL(req.url);
   const userKey = searchParams.get('userKey');
 
   /** @type {SplitIO.IAsyncClient} */
@@ -23,22 +23,24 @@ export default async function handler(req) {
     mode: 'consumer_partial',
     storage: PluggableStorage({
       wrapper: EdgeConfigWrapper({
+        // The Edge Config item where Split stores feature flag definitions, specified in the Split integration step
         edgeConfigKey: process.env.EDGE_CONFIG_ITEM_KEY
-      }),
+      })
     }),
     // Disable or keep only ERROR log level in production, to minimize performance impact
     debug: ErrorLogger(),
   }).client();
 
+  // Wait to load feature flag definitions from the Edge Config
   await client.ready();
 
   const treatment = await client.getTreatment(SPLIT_NAME);
 
-  // Flush data asynchronously
+  // Flush impressions asynchronously. Avoid 'await' in order to not delay the response.
   client.destroy();
 
   return new Response(JSON.stringify({ treatment }), {
     status: 200,
-    headers: { 'content-type': 'application/json' },
-  })
+    headers: { 'content-type': 'application/json' }
+  });
 }
