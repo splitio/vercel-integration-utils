@@ -21,44 +21,45 @@ The project overall architecture is ilustrated in the following diagram:
     - Install dependencies: `npm install @splitsoftware/splitio-browserjs @splitsoftware/vercel-integration-utils`
     - Import and use the Split SDK with the EdgeConfig wrapper in your Edge function or middleware (check [API route example here](./example/pages/api/get-treatment.js)):
     ```javascript
-    import { SplitFactory, PluggableStorage } from '@splitsoftware/splitio-browserjs';
+    import { SplitFactory, PluggableStorage, ErrorLogger } from '@splitsoftware/splitio-browserjs';
     import { EdgeConfigWrapper } from '@splitsoftware/vercel-integration-utils';
-    import { NextApiRequest, NextApiResponse } from 'next';
 
     // Deploy as an Edge function
     export const config = { runtime: "edge" };
 
     export default async function handler(req) {
       // Extract user key. In this case from a request query param
-      const { searchParams } = new URL(req.url)
+      const { searchParams } = new URL(req.url);
       const userKey = searchParams.get('userKey');
 
-      const splitClient = SplitFactory({
+      const client = SplitFactory({
         core: {
           authorizationKey: '<YOUR_SPLIT_API_KEY>',
-          key: userKey,
+          key: userKey
         },
-        mode: 'PARTIAL_CONSUMER',
+        mode: 'consumer_partial',
         storage: PluggableStorage({
           wrapper: EdgeConfigWrapper({
             // The Edge Config item where Split stores feature flag definitions, specified in the Split integration step
             edgeConfigKey: '<YOUR_EDGE_CONFIG_ITEM_KEY>'
           })
-        })
+        }),
+        // Disable or keep only ERROR log level in production, to minimize performance impact
+        debug: ErrorLogger()
       }).client();
 
       // Wait to load feature flag definitions from the Edge Config
-      await splitClient.ready();
+      await client.ready();
 
       const treatment = await client.getTreatment('SOME_FEATURE_FLAG');
 
-      // Destroy and flush impressions asynchronously. Avoid 'await' to not delay the response.
+      // Flush impressions asynchronously. Avoid 'await' in order to not delay the response.
       client.destroy();
 
       return new Response(JSON.stringify({ treatment }), {
         status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
+        headers: { 'content-type': 'application/json' }
+      });
     }
     ```
     - Remember to update the Split API Key and Edge Config item key in the code above.
