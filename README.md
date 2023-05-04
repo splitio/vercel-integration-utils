@@ -64,3 +64,13 @@ The project overall architecture is ilustrated in the following diagram:
     ```
     - Remember to update the Split API Key and Edge Config item key in the code above.
 3. Deploy your application to Vercel and test the integration.
+
+## Advanced use cases
+
+### Provide an Edge Config connection string
+
+@TODO
+
+### Using the Split SDK in a NodeJS runtime (serverless function)
+
+@TODO
