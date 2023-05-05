@@ -69,8 +69,21 @@ The project overall architecture is ilustrated in the following diagram:
 
 ### Provide an Edge Config connection string
 
-@TODO
+By default, the `EdgeConfigWrapper` access an Edge Config instance using the Connection String stored in the `EDGE_CONFIG` environment variable. That variable is automatically set by Vercel when you [connect the Edge Config to your project](https://vercel.com/docs/concepts/edge-network/edge-config/using-edge-config#using-a-connection-string) via the Vercel Dashboard.
 
-### Using the Split SDK in a NodeJS runtime (serverless function)
+However, you might require to use a different Edge Config instance, for example, if the default one is used for storing other data. In that case, you can provide the Edge Config ID and Read Access token to the wrapper as follows:
 
-@TODO
+```javascript
+const client = SplitFactory({
+  ...
+  storage: PluggableStorage({
+    wrapper: EdgeConfigWrapper({
+      edgeConfigKey: '<YOUR_EDGE_CONFIG_ITEM_KEY>',
+      edgeConfigId: '<YOUR_EDGE_CONFIG_ID>',
+      edgeConfigReadAccessToken: '<YOUR_EDGE_CONFIG_READ_ACCESS_TOKEN>'
+    })
+  })
+});
+```
+
+The wrapper will use them to generate a connection string URL for the Edge Config instance.
