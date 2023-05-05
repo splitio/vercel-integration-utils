@@ -4,6 +4,7 @@ import { EdgeConfigWrapper } from '@splitsoftware/vercel-integration-utils';
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 // Request example: https://<HOST>/api/get-treatment?userKey=<USER_KEY>
 
+// @REPLACE with the feature flag name you want to evaluate
 const SPLIT_NAME = 'test_split';
 
 // Run API route as an Edge function rather than a Serverless one, because the SDK uses Fetch API to flush data, which is available in Edge runtime but not in Serverless.
