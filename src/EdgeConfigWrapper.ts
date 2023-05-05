@@ -108,16 +108,16 @@ export function EdgeConfigWrapper(options: {
     },
 
     // No-op methods: not used by the SDK in partial consumer mode
-    async set(key: string, value: string) { },
-    async getAndSet(key: string, value: string) { },
-    async del(key: string) { },
-    async incr(key: string) { },
-    async decr(key: string) { },
-    async addItems(key: string, items: string[]) { },
-    async removeItems(key: string, items: string[]) { },
-    async getItems(key: string) { },
-    async pushItems(key: string, items: string[]) { },
-    async popItems(key: string, count: number) { },
-    async getItemsCount(key: string) { },
+    async set(key: string, value: string) { throw new Error('SET not implemented'); },
+    async getAndSet(key: string, value: string) { throw new Error('GET AND SET not implemented'); },
+    async del(key: string) { throw new Error('DEL not implemented'); },
+    async incr(key: string) { throw new Error('INCR not implemented'); },
+    async decr(key: string) { throw new Error('DECR not implemented'); },
+    async addItems(key: string, items: string[]) { throw new Error('ADD ITEMS not implemented'); },
+    async removeItems(key: string, items: string[]) { throw new Error('REMOVE ITEMS not implemented'); },
+    async getItems(key: string) { throw new Error('GET ITEMS not implemented'); },
+    async pushItems(key: string, items: string[]) { throw new Error('PUSH ITEMS not implemented'); },
+    async popItems(key: string, count: number) { throw new Error('POP ITEMS not implemented'); },
+    async getItemsCount(key: string) { throw new Error('GET ITEMS COUNT not implemented'); },
   };
 }
