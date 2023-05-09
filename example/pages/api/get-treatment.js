@@ -18,7 +18,7 @@ export default async function handler(req) {
   /** @type {SplitIO.IAsyncClient} */
   const client = SplitFactory({
     core: {
-      authorizationKey: process.env.SPLIT_API_KEY,
+      authorizationKey: process.env.SPLIT_SDK_KEY,
       key: userKey
     },
     mode: 'consumer_partial',
