@@ -34,7 +34,7 @@ The project overall architecture is ilustrated in the following diagram:
 
       const client = SplitFactory({
         core: {
-          authorizationKey: '<YOUR_SPLIT_API_KEY>',
+          authorizationKey: '<YOUR_SPLIT_SDK_KEY>',
           key: userKey
         },
         mode: 'consumer_partial',
@@ -62,7 +62,7 @@ The project overall architecture is ilustrated in the following diagram:
       });
     }
     ```
-    - Remember to update the Split API Key and Edge Config item key in the code above.
+    - Remember to update the Split SDK key and Edge Config item key in the code above.
 3. Deploy your application to Vercel and test the integration.
 
 ## Advanced use cases
