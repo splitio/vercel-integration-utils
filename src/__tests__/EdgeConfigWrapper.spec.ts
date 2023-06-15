@@ -1,15 +1,20 @@
-import { createClient, get } from "@vercel/edge-config";
-
+// Test target
 import { EdgeConfigWrapper } from '../EdgeConfigWrapper'
 
-const mockedDefaultOptions = {
-  edgeConfigKey: 'edgeConfigKey'
-}
+// Mocks
+import * as EdgeConfigClient from "@vercel/edge-config";
 
-const mockedConnectionStringOptions = {
+jest.mock('@vercel/edge-config', () => {
+  return { // @ts-ignore
+    get: jest.fn((itemKey) => mockedData[itemKey])
+  }
+});
+
+const { get } = EdgeConfigClient;
+
+const mockedOptions = {
   edgeConfigKey: 'edgeConfigKey',
-  edgeConfigId: 'edgeConfigId',
-  edgeConfigReadAccessToken: 'edgeConfigReadAccessToken'
+  edgeConfig: EdgeConfigClient
 }
 
 const mockedData = {
@@ -22,17 +27,6 @@ const mockedData = {
   },
   invalidItem: {},
 }
-
-jest.mock('@vercel/edge-config', () => {
-  return {
-    createClient: jest.fn(() => {
-      return { // @ts-ignore
-        get: jest.fn((itemKey) => mockedData[itemKey])
-      }
-    }), // @ts-ignore
-    get: jest.fn((itemKey) => mockedData[itemKey])
-  }
-});
 
 async function evaluate(storage: any) {
   // Get method
@@ -57,24 +51,27 @@ describe('Edge config SDK storage wrapper', () => {
     jest.clearAllMocks();
   });
 
-  test('Misconfigurations', async () => { // @ts-expect-error
-    expect(() => EdgeConfigWrapper({})).toThrow('Edge Config Item Key not provided'); // @ts-expect-error
-    expect(() => EdgeConfigWrapper()).toThrow('Edge Config Item Key not provided');
+  test('Misconfigurations', async () => {
+    const ITEM_KEY_NOT_PROVIDED = 'Edge Config Item Key not provided';
+    const EDGE_CONFIG_NOT_PROVIDED = 'Edge Config client not provided'; // @ts-expect-error
+    expect(() => EdgeConfigWrapper()).toThrow(ITEM_KEY_NOT_PROVIDED); // @ts-expect-error
+    expect(() => EdgeConfigWrapper({})).toThrow(ITEM_KEY_NOT_PROVIDED); // @ts-expect-error
+    expect(() => EdgeConfigWrapper({ edgeConfigKey: undefined })).toThrow(ITEM_KEY_NOT_PROVIDED); // @ts-expect-error
+    expect(() => EdgeConfigWrapper({ edgeConfigKey: 'some-key' })).toThrow(EDGE_CONFIG_NOT_PROVIDED);
   });
 
   test('"connect" promise rejects if edge config key is not found or is invalid', async () => {
-    const storage = EdgeConfigWrapper({ edgeConfigKey: 'invalidItem' });
+    const storage = EdgeConfigWrapper({ edgeConfigKey: 'invalidItem', edgeConfig: EdgeConfigClient });
 
     expect(storage.connect()).rejects.toThrow('Invalid value received from item key \'invalidItem\'');
   });
 
   test('Default configuration', async () => {
-    const storage = EdgeConfigWrapper(mockedDefaultOptions);
+    const storage = EdgeConfigWrapper(mockedOptions);
 
     // Connect
     await storage.connect();
     expect(get).toBeCalledTimes(1);
-    expect(createClient).not.toBeCalled();
 
     // Test methods
     await evaluate(storage);
@@ -83,18 +80,4 @@ describe('Edge config SDK storage wrapper', () => {
     await storage.disconnect();
   });
 
-  test('Configuration with connection string', async () => {
-    const storage = EdgeConfigWrapper(mockedConnectionStringOptions);
-
-    // Connect
-    await storage.connect();
-    expect(get).not.toBeCalled();
-    expect(createClient).toBeCalledTimes(1);
-
-    // test methods
-    await evaluate(storage);
-
-    // Disconnect
-    await storage.disconnect();
-  });
 })
