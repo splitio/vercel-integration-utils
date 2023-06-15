@@ -16,18 +16,19 @@ The project overall architecture is ilustrated in the following diagram:
 
 ## Setup
 
-1. Install the [Split integration](https://TODO) to start synchronizing feature flag definitions into your Edge Config instance.
+1. Install the [Split integration](https://help.split.io/hc/en-us/articles/16469873148173) to start synchronizing feature flag definitions into your Edge Config instance.
 2. Setup the Split SDK in your application project:
-    - Install dependencies: `npm install @splitsoftware/splitio-browserjs @splitsoftware/vercel-integration-utils`
+    - Install dependencies: `npm install @splitsoftware/splitio-browserjs @splitsoftware/vercel-integration-utils @vercel/edge-config`
     - Import and use the Split SDK with the EdgeConfig wrapper in your Edge function or middleware (check [API route example here](./example/pages/api/get-treatment.js)):
     ```javascript
     import { SplitFactory, PluggableStorage, ErrorLogger } from '@splitsoftware/splitio-browserjs';
     import { EdgeConfigWrapper } from '@splitsoftware/vercel-integration-utils';
+    import * as EdgeConfigClient from '@vercel/edge-config';
 
-    // Deploy as an Edge function
+    // Deploying as an Edge function here, but you can also use it on Edge middlewares and Serverless functions
     export const config = { runtime: "edge" };
 
-    export default async function handler(req) {
+    export default async function handler(req, event) {
       // Extract user key. In this case from a request query param
       const { searchParams } = new URL(req.url);
       const userKey = searchParams.get('userKey');
@@ -41,7 +42,9 @@ The project overall architecture is ilustrated in the following diagram:
         storage: PluggableStorage({
           wrapper: EdgeConfigWrapper({
             // The Edge Config item where Split stores feature flag definitions, specified in the Split integration step
-            edgeConfigKey: '<YOUR_EDGE_CONFIG_ITEM_KEY>'
+            edgeConfigKey: '<YOUR_EDGE_CONFIG_ITEM_KEY>',
+            // The Edge Config client
+            edgeConfig: EdgeConfigClient
           })
         }),
         // Disable or keep only ERROR log level in production, to minimize performance impact
@@ -53,8 +56,8 @@ The project overall architecture is ilustrated in the following diagram:
 
       const treatment = await client.getTreatment('SOME_FEATURE_FLAG');
 
-      // Flush impressions asynchronously. Avoid 'await' in order to not delay the response.
-      client.destroy();
+      // Flush impressions asynchronously. Avoid 'await' on the destroy call, to not delay the response.
+      event.waitUntil(client.destroy());
 
       return new Response(JSON.stringify({ treatment }), {
         status: 200,
@@ -69,21 +72,20 @@ The project overall architecture is ilustrated in the following diagram:
 
 ### Provide an Edge Config connection string
 
-By default, the `EdgeConfigWrapper` access an Edge Config instance using the Connection String stored in the `EDGE_CONFIG` environment variable. That variable is automatically set by Vercel when you [connect the Edge Config to your project](https://vercel.com/docs/concepts/edge-network/edge-config/using-edge-config#using-a-connection-string) via the Vercel Dashboard.
+By default, the Edge Config client access an Edge Config instance using the Connection String stored in the `EDGE_CONFIG` environment variable. That variable is automatically set by Vercel when you [connect the Edge Config to your project](https://vercel.com/docs/concepts/edge-network/edge-config/using-edge-config#using-a-connection-string) via the Vercel Dashboard.
 
-However, you might require to use a different Edge Config instance, for example, if the default one is used for storing other data. In that case, you can provide the Edge Config ID and Read Access token to the wrapper as follows:
+However, you might require to use a different Edge Config instance, for example, if the default one is used for storing other data. In that case, you can create an Edge Config client with a different connection string, as shown below:
 
 ```javascript
+import { createClient } from '@vercel/edge-config';
+
 const client = SplitFactory({
   ...
   storage: PluggableStorage({
     wrapper: EdgeConfigWrapper({
       edgeConfigKey: '<YOUR_EDGE_CONFIG_ITEM_KEY>',
-      edgeConfigId: '<YOUR_EDGE_CONFIG_ID>',
-      edgeConfigReadAccessToken: '<YOUR_EDGE_CONFIG_READ_ACCESS_TOKEN>'
+      edgeConfig: createClient('<YOUR-EDGE-CONFIG-CONNECTION-STRING>')
     })
   })
 });
 ```
-
-The wrapper will use them to generate a connection string URL for the Edge Config instance.
