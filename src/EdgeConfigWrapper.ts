@@ -1,49 +1,30 @@
-import { createClient as createEdgeConfigClient, get } from '@vercel/edge-config';
-
-const VERCEL_EDGE_CONFIG = 'https://edge-config.vercel.com'
-
-function createConnectionString(edgeConfigId: string, readAccessToken: string) {
-  return `${VERCEL_EDGE_CONFIG}/${edgeConfigId}?token=${readAccessToken}`
-}
-
-type Data = Record<string, any>;
+import type { EdgeConfigClient } from '@vercel/edge-config';
 
 /**
- * Creates an instance of EdgeConfigWrapper that wraps around the PluggableStorageWrapper interface.
+ * Creates a storage wrapper instance for Vercel Edge Config.
  *
- * @param {Object} options - The configuration options for the EdgeConfigApiStorageWrapper instance.
- * @param {string} options.edgeConfigKey - Item key used to get Split data from edge config.
- * @param {string} [options.edgeConfigId] - The ID of the edge config.
- * @param {string} [options.edgeConfigReadAccessToken] - The edge config related token.
- * @returns - An instance of EdgeConfigWrapper that wraps around the PluggableStorageWrapper interface.
+ * @param {Object} options - The configuration options.
+ * @param {string} options.edgeConfigKey - Item key used to get Split feature flag definitions from Edge Config.
+ * @param {EdgeConfigClient} options.edgeConfig - The Edge Config client instance.
+ * @returns - A storage wrapper instance.
  */
 export function EdgeConfigWrapper(options: {
   edgeConfigKey: string;
-  edgeConfigId?: string;
-  edgeConfigReadAccessToken?: string;
+  edgeConfig: EdgeConfigClient;
 }) {
 
-  if (!options || !options.edgeConfigKey) {
-    throw new Error('Edge Config Item Key not provided');
-  }
+  const { edgeConfigKey, edgeConfig } = options || {};
 
-  const { edgeConfigKey, edgeConfigId, edgeConfigReadAccessToken } = options
+  if (!edgeConfigKey) throw new Error('Edge Config Item Key not provided');
+  if (!edgeConfig) throw new Error('Edge Config client not provided');
 
-  let data: Data;
-
-  let readEdgeConfig = get
-
-  if (edgeConfigId && edgeConfigReadAccessToken) {
-    const edgeConfigConnectionString = createConnectionString(edgeConfigId, edgeConfigReadAccessToken);
-    const edgeConfig = createEdgeConfigClient(edgeConfigConnectionString);
-    readEdgeConfig = edgeConfig.get;
-  }
+  let data: Record<string, any>;
 
   return {
     // Read data from Edge Config
     async connect() {
       // Throws error if item key is not found
-      const edgeConfigData = await readEdgeConfig<Data>(edgeConfigKey)
+      const edgeConfigData = await edgeConfig.get(edgeConfigKey)
 
       // Validate Edge Config data
       if (typeof edgeConfigData !== 'object' || edgeConfigData === null || !edgeConfigData.hasOwnProperty('SPLITIO.splits.till')) {
