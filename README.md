@@ -48,12 +48,20 @@ The project overall architecture is ilustrated in the following diagram:
             edgeConfig: EdgeConfigClient
           })
         }),
+        startup: {
+          // If the Edge Config wrapper cannot retrieve the data (e.g., wrong item key or data not synchronized), the SDK will time out almost immediately
+          readyTimeout: 0.01
+        },
         // Disable or keep only ERROR log level in production, to minimize performance impact
         debug: ErrorLogger()
       }).client();
 
-      // Wait to load feature flag definitions from the Edge Config
-      await client.ready();
+      // Wait until the SDK is ready or timed out. If timeout occurs, treatment evaluations will default to 'control'.
+      // A timeout should not occur if Edge Config is properly configured and synchronized.
+      await new Promise(res => {
+        client.on(client.Event.SDK_READY, res);
+        client.on(client.Event.SDK_READY_TIMED_OUT, res);
+      });
 
       const treatment = await client.getTreatment('SOME_FEATURE_FLAG');
 
