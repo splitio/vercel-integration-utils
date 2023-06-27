@@ -32,10 +32,6 @@ export default async function handler(req, event) {
         edgeConfig: EdgeConfigClient
       })
     }),
-    startup: {
-      // If the Edge Config wrapper cannot retrieve the data (e.g., wrong item key or data not synchronized), the SDK will time out almost immediately
-      readyTimeout: 0.01
-    },
     // Disable or keep only ERROR log level in production, to minimize performance impact
     debug: ErrorLogger(),
   }).client();

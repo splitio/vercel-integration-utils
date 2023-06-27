@@ -16,7 +16,7 @@ The project overall architecture is ilustrated in the following diagram:
 
 ## Setup
 
-1. Install the [Split integration](https://help.split.io/hc/en-us/articles/16469873148173) to start synchronizing feature flag definitions into your Edge Config instance.
+1. Install the [Split integration for Vercel](https://help.split.io/hc/en-us/articles/16469873148173) to start synchronizing feature flag definitions into your Edge Config instance.
 2. Setup the Split SDK in your application project:
     - Install dependencies: `npm install @splitsoftware/splitio-browserjs @splitsoftware/vercel-integration-utils @vercel/edge-config`
     - Import and use the Split SDK with the EdgeConfig wrapper in your Edge function or middleware (check [API route example here](./example/pages/api/get-treatment.js)):
@@ -48,10 +48,6 @@ The project overall architecture is ilustrated in the following diagram:
             edgeConfig: EdgeConfigClient
           })
         }),
-        startup: {
-          // If the Edge Config wrapper cannot retrieve the data (e.g., wrong item key or data not synchronized), the SDK will time out almost immediately
-          readyTimeout: 0.01
-        },
         // Disable or keep only ERROR log level in production, to minimize performance impact
         debug: ErrorLogger()
       }).client();
