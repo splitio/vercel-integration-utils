@@ -20,6 +20,11 @@ export function EdgeConfigWrapper(options: {
 
   let data: Record<string, any>;
 
+  function getSync(key: string) {
+    const item = data[key];
+    return item ? typeof item === 'string' ? item : JSON.stringify(item) : null;
+  }
+
   return {
     // Read data from Edge Config
     async connect() {
@@ -48,7 +53,7 @@ export function EdgeConfigWrapper(options: {
      * or null if the key does not exist.
      */
     async get(key: string) {
-      return data[key] ?? null;
+      return getSync(key);
     },
 
     /**
@@ -71,7 +76,7 @@ export function EdgeConfigWrapper(options: {
      * For every key that does not hold a string value or does not exist, null is returned.
      */
     async getMany(keys: string[]) {
-      return keys.map((key) => data[key] ?? null);
+      return keys.map(getSync);
     },
 
     /**
@@ -84,8 +89,7 @@ export function EdgeConfigWrapper(options: {
      * or false if it is not a member or `key` set does not exist.
      */
     async itemContains(key: string, item: string) {
-      const isSet = data.hasOwnProperty(key) && Array.isArray(data[key]);
-      return isSet && data[key].includes(item);
+      return Array.isArray(data[key]) && data[key].includes(item);
     },
 
     // No-op methods: not used by the SDK in partial consumer mode
