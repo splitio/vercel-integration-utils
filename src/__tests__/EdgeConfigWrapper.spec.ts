@@ -13,12 +13,12 @@ jest.mock('@vercel/edge-config', () => {
 const { get } = EdgeConfigClient;
 
 const mockedOptions = {
-  edgeConfigKey: 'edgeConfigKey',
+  edgeConfigItemKey: 'edgeConfigItemKey',
   edgeConfig: EdgeConfigClient
 }
 
 const mockedData = {
-  edgeConfigKey: {
+  edgeConfigItemKey: {
     'SPLITIO.splits.till': '1682089737502',
     split1: { name: 'split1' },
     split2: '{ "name": "split2" }',
@@ -56,12 +56,12 @@ describe('Edge config SDK storage wrapper', () => {
     const EDGE_CONFIG_NOT_PROVIDED = 'Edge Config client not provided'; // @ts-expect-error
     expect(() => EdgeConfigWrapper()).toThrow(ITEM_KEY_NOT_PROVIDED); // @ts-expect-error
     expect(() => EdgeConfigWrapper({})).toThrow(ITEM_KEY_NOT_PROVIDED); // @ts-expect-error
-    expect(() => EdgeConfigWrapper({ edgeConfigKey: undefined })).toThrow(ITEM_KEY_NOT_PROVIDED); // @ts-expect-error
-    expect(() => EdgeConfigWrapper({ edgeConfigKey: 'some-key' })).toThrow(EDGE_CONFIG_NOT_PROVIDED);
+    expect(() => EdgeConfigWrapper({ edgeConfigItemKey: undefined })).toThrow(ITEM_KEY_NOT_PROVIDED); // @ts-expect-error
+    expect(() => EdgeConfigWrapper({ edgeConfigItemKey: 'some-key' })).toThrow(EDGE_CONFIG_NOT_PROVIDED);
   });
 
   test('"connect" promise rejects if edge config key is not found or is invalid', async () => {
-    const storage = EdgeConfigWrapper({ edgeConfigKey: 'invalidItem', edgeConfig: EdgeConfigClient });
+    const storage = EdgeConfigWrapper({ edgeConfigItemKey: 'invalidItem', edgeConfig: EdgeConfigClient });
 
     expect(storage.connect()).rejects.toThrow('Invalid value received from item key \'invalidItem\'');
   });

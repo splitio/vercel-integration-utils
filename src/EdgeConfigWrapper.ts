@@ -4,18 +4,18 @@ import type { EdgeConfigClient } from '@vercel/edge-config';
  * Creates a storage wrapper instance for Vercel Edge Config.
  *
  * @param {Object} options - The configuration options.
- * @param {string} options.edgeConfigKey - Item key used to get Split feature flag definitions from Edge Config.
+ * @param {string} options.edgeConfigItemKey - Item key used to get Split feature flag definitions from Edge Config.
  * @param {EdgeConfigClient} options.edgeConfig - The Edge Config client instance.
  * @returns - A storage wrapper instance.
  */
 export function EdgeConfigWrapper(options: {
-  edgeConfigKey: string;
+  edgeConfigItemKey: string;
   edgeConfig: EdgeConfigClient;
 }) {
 
-  const { edgeConfigKey, edgeConfig } = options || {};
+  const { edgeConfigItemKey, edgeConfig } = options || {};
 
-  if (!edgeConfigKey) throw new Error('Edge Config Item Key not provided');
+  if (!edgeConfigItemKey) throw new Error('Edge Config Item Key not provided');
   if (!edgeConfig) throw new Error('Edge Config client not provided');
 
   let data: Record<string, any>;
@@ -29,11 +29,11 @@ export function EdgeConfigWrapper(options: {
     // Read data from Edge Config
     async connect() {
       // Throws error if item key is not found
-      const edgeConfigData = await edgeConfig.get(edgeConfigKey)
+      const edgeConfigData = await edgeConfig.get(edgeConfigItemKey)
 
       // Validate Edge Config data
       if (typeof edgeConfigData !== 'object' || edgeConfigData === null || !edgeConfigData.hasOwnProperty('SPLITIO.splits.till')) {
-        throw new Error(`Invalid value received from item key '${edgeConfigKey}'`);
+        throw new Error(`Invalid value received from item key '${edgeConfigItemKey}'`);
       }
 
       data = edgeConfigData;

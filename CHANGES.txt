@@ -1,4 +1,4 @@
-0.1.1 (June 29, 2023)
+1.0.0 (June 29, 2023)
  - Updated wrapper to support parsed feature flag definitions.
 
 0.1.0 (June 22, 2023)

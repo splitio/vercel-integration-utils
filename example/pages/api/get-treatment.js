@@ -25,8 +25,8 @@ export default async function handler(req, event) {
     mode: 'consumer_partial',
     storage: PluggableStorage({
       wrapper: EdgeConfigWrapper({
-        // The Edge Config item where Split stores feature flag definitions, specified in the Split integration step
-        edgeConfigKey: process.env.SPLIT_EDGE_CONFIG_ITEM_KEY,
+        // The Edge Config item key where Split stores feature flag definitions, specified in the Split integration step
+        edgeConfigItemKey: process.env.SPLIT_EDGE_CONFIG_ITEM_KEY,
         // The Edge Config client. In this case, we are passing the default client
         // that reads from the Edge Config stored in process.env.EDGE_CONFIG
         edgeConfig: EdgeConfigClient
