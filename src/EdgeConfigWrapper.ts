@@ -4,31 +4,39 @@ import type { EdgeConfigClient } from '@vercel/edge-config';
  * Creates a storage wrapper instance for Vercel Edge Config.
  *
  * @param {Object} options - The configuration options.
- * @param {string} options.edgeConfigKey - Item key used to get Split feature flag definitions from Edge Config.
+ * @param {string} options.edgeConfigItemKey - Item key used to get Split feature flag definitions from Edge Config.
  * @param {EdgeConfigClient} options.edgeConfig - The Edge Config client instance.
  * @returns - A storage wrapper instance.
  */
 export function EdgeConfigWrapper(options: {
-  edgeConfigKey: string;
+  edgeConfigItemKey: string;
   edgeConfig: EdgeConfigClient;
 }) {
 
-  const { edgeConfigKey, edgeConfig } = options || {};
+  const { edgeConfigItemKey, edgeConfig } = options || {};
 
-  if (!edgeConfigKey) throw new Error('Edge Config Item Key not provided');
+  if (!edgeConfigItemKey) throw new Error('Edge Config Item Key not provided');
   if (!edgeConfig) throw new Error('Edge Config client not provided');
 
   let data: Record<string, any>;
+
+  function getSync(key: string) {
+    const item = data[key];
+    if (item) {
+      return typeof item === 'string' ? item : JSON.stringify(item);
+    }
+    return null;
+  }
 
   return {
     // Read data from Edge Config
     async connect() {
       // Throws error if item key is not found
-      const edgeConfigData = await edgeConfig.get(edgeConfigKey)
+      const edgeConfigData = await edgeConfig.get(edgeConfigItemKey)
 
       // Validate Edge Config data
       if (typeof edgeConfigData !== 'object' || edgeConfigData === null || !edgeConfigData.hasOwnProperty('SPLITIO.splits.till')) {
-        throw new Error(`Invalid value received from item key '${edgeConfigKey}'`);
+        throw new Error(`No feature flag definitions were found in item key '${edgeConfigItemKey}'`);
       }
 
       data = edgeConfigData;
@@ -48,7 +56,7 @@ export function EdgeConfigWrapper(options: {
      * or null if the key does not exist.
      */
     async get(key: string) {
-      return data[key] ?? null;
+      return getSync(key);
     },
 
     /**
@@ -71,7 +79,7 @@ export function EdgeConfigWrapper(options: {
      * For every key that does not hold a string value or does not exist, null is returned.
      */
     async getMany(keys: string[]) {
-      return keys.map((key) => data[key] ?? null);
+      return keys.map(getSync);
     },
 
     /**
@@ -84,8 +92,7 @@ export function EdgeConfigWrapper(options: {
      * or false if it is not a member or `key` set does not exist.
      */
     async itemContains(key: string, item: string) {
-      const isSet = data.hasOwnProperty(key) && Array.isArray(data[key]);
-      return isSet && data[key].includes(item);
+      return Array.isArray(data[key]) && data[key].includes(item);
     },
 
     // No-op methods: not used by the SDK in partial consumer mode

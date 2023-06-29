@@ -13,15 +13,15 @@ jest.mock('@vercel/edge-config', () => {
 const { get } = EdgeConfigClient;
 
 const mockedOptions = {
-  edgeConfigKey: 'edgeConfigKey',
+  edgeConfigItemKey: 'edgeConfigItemKey',
   edgeConfig: EdgeConfigClient
 }
 
 const mockedData = {
-  edgeConfigKey: {
+  edgeConfigItemKey: {
     'SPLITIO.splits.till': '1682089737502',
-    count1: 3,
-    count2: 2,
+    split1: { name: 'split1' },
+    split2: '{ "name": "split2" }',
     key: 'value',
     set: ['item1', 'item2', 'item3']
   },
@@ -34,11 +34,11 @@ async function evaluate(storage: any) {
   expect(await storage.get('key2')).toBe(null);
 
   // Get keys by prefix method
-  expect(await storage.getKeysByPrefix('c')).toEqual(['count1', 'count2']);
-  expect(await storage.getKeysByPrefix('count2')).toEqual(['count2']);
+  expect(await storage.getKeysByPrefix('split')).toEqual(['split1', 'split2']);
+  expect(await storage.getKeysByPrefix('split2')).toEqual(['split2']);
 
   // Get many method
-  expect(await storage.getMany(['count1', 'count2'])).toEqual([3, 2]);
+  expect(await storage.getMany(['split1', 'split2', 'split3'])).toEqual(['{"name":"split1"}', '{ "name": "split2" }', null]);
 
   // Item contains method
   expect(await storage.itemContains('set', 'item2')).toEqual(true);
@@ -56,14 +56,14 @@ describe('Edge config SDK storage wrapper', () => {
     const EDGE_CONFIG_NOT_PROVIDED = 'Edge Config client not provided'; // @ts-expect-error
     expect(() => EdgeConfigWrapper()).toThrow(ITEM_KEY_NOT_PROVIDED); // @ts-expect-error
     expect(() => EdgeConfigWrapper({})).toThrow(ITEM_KEY_NOT_PROVIDED); // @ts-expect-error
-    expect(() => EdgeConfigWrapper({ edgeConfigKey: undefined })).toThrow(ITEM_KEY_NOT_PROVIDED); // @ts-expect-error
-    expect(() => EdgeConfigWrapper({ edgeConfigKey: 'some-key' })).toThrow(EDGE_CONFIG_NOT_PROVIDED);
+    expect(() => EdgeConfigWrapper({ edgeConfigItemKey: undefined })).toThrow(ITEM_KEY_NOT_PROVIDED); // @ts-expect-error
+    expect(() => EdgeConfigWrapper({ edgeConfigItemKey: 'some-key' })).toThrow(EDGE_CONFIG_NOT_PROVIDED);
   });
 
   test('"connect" promise rejects if edge config key is not found or is invalid', async () => {
-    const storage = EdgeConfigWrapper({ edgeConfigKey: 'invalidItem', edgeConfig: EdgeConfigClient });
+    const storage = EdgeConfigWrapper({ edgeConfigItemKey: 'invalidItem', edgeConfig: EdgeConfigClient });
 
-    expect(storage.connect()).rejects.toThrow('Invalid value received from item key \'invalidItem\'');
+    expect(storage.connect()).rejects.toThrow('No feature flag definitions were found in item key \'invalidItem\'');
   });
 
   test('Default configuration', async () => {

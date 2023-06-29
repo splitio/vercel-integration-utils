@@ -1,2 +1,6 @@
+1.0.0 (June 29, 2023)
+ - BREAKING CHANGE: the configuration parameter `edgeConfigKey` was renamed to `edgeConfigItemKey`.
+ - Updated wrapper to support parsed feature flag definitions.
+
 0.1.0 (June 22, 2023)
  - Initial public release.
