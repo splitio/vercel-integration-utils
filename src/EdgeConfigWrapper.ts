@@ -22,7 +22,10 @@ export function EdgeConfigWrapper(options: {
 
   function getSync(key: string) {
     const item = data[key];
-    return item ? typeof item === 'string' ? item : JSON.stringify(item) : null;
+    if (item) {
+      return typeof item === 'string' ? item : JSON.stringify(item);
+    }
+    return null;
   }
 
   return {
@@ -33,7 +36,7 @@ export function EdgeConfigWrapper(options: {
 
       // Validate Edge Config data
       if (typeof edgeConfigData !== 'object' || edgeConfigData === null || !edgeConfigData.hasOwnProperty('SPLITIO.splits.till')) {
-        throw new Error(`Invalid value received from item key '${edgeConfigItemKey}'`);
+        throw new Error(`No feature flag definitions were found in item key '${edgeConfigItemKey}'`);
       }
 
       data = edgeConfigData;

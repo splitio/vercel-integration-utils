@@ -63,7 +63,7 @@ describe('Edge config SDK storage wrapper', () => {
   test('"connect" promise rejects if edge config key is not found or is invalid', async () => {
     const storage = EdgeConfigWrapper({ edgeConfigItemKey: 'invalidItem', edgeConfig: EdgeConfigClient });
 
-    expect(storage.connect()).rejects.toThrow('Invalid value received from item key \'invalidItem\'');
+    expect(storage.connect()).rejects.toThrow('No feature flag definitions were found in item key \'invalidItem\'');
   });
 
   test('Default configuration', async () => {
