@@ -1,6 +1,6 @@
 import { SplitFactory, PluggableStorage, ErrorLogger } from '@splitsoftware/splitio-browserjs';
 import { EdgeConfigWrapper } from '@splitsoftware/vercel-integration-utils';
-import * as EdgeConfigClient from '@vercel/edge-config';
+import { createClient } from '@vercel/edge-config';
 
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 // Request example: https://<HOST>/api/get-treatment?userKey=<USER_KEY>
@@ -29,7 +29,7 @@ export default async function handler(req, event) {
         edgeConfigItemKey: process.env.SPLIT_EDGE_CONFIG_ITEM_KEY,
         // The Edge Config client. In this case, we are passing the default client
         // that reads from the Edge Config stored in process.env.EDGE_CONFIG
-        edgeConfig: EdgeConfigClient
+        edgeConfig: createClient(process.env.EDGE_CONFIG)
       })
     }),
     // Disable or keep only ERROR log level in production, to minimize performance impact
