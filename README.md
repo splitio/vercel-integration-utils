@@ -23,7 +23,7 @@ The project overall architecture is ilustrated in the following diagram:
     ```javascript
     import { SplitFactory, PluggableStorage, ErrorLogger } from '@splitsoftware/splitio-browserjs';
     import { EdgeConfigWrapper } from '@splitsoftware/vercel-integration-utils';
-    import * as EdgeConfigClient from '@vercel/edge-config';
+    import { createClient } from '@vercel/edge-config';
 
     // Deploying as an Edge function here, but you can also use it on Edge middlewares and Serverless functions
     export const config = { runtime: "edge" };
@@ -45,7 +45,7 @@ The project overall architecture is ilustrated in the following diagram:
             edgeConfigItemKey: '<YOUR_EDGE_CONFIG_ITEM_KEY>',
             // The Edge Config client. In this case, we are passing the default client
             // that reads from the Edge Config stored in process.env.EDGE_CONFIG
-            edgeConfig: EdgeConfigClient
+            edgeConfig: createClient(process.env.EDGE_CONFIG)
           })
         }),
         // Disable or keep only ERROR log level in production, to minimize performance impact
