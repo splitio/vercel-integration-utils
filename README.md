@@ -43,8 +43,8 @@ The project overall architecture is ilustrated in the following diagram:
           wrapper: EdgeConfigWrapper({
             // The Edge Config item where Split stores feature flag definitions, specified in the Split integration step
             edgeConfigItemKey: '<YOUR_EDGE_CONFIG_ITEM_KEY>',
-            // The Edge Config client. In this case, we are passing the default client
-            // that reads from the Edge Config stored in process.env.EDGE_CONFIG
+            // The Edge Config client. In this case, we are creating a client that uses the same configuration
+            // than the default client, which reads from the Edge Config stored in process.env.EDGE_CONFIG
             edgeConfig: createClient(process.env.EDGE_CONFIG)
           })
         }),
