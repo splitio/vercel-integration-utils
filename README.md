@@ -8,7 +8,7 @@ Keeping feature flag definitions within an Edge Config instance enables the Spli
 
 The package includes the storage wrapper module (`src/EdgeConfigWrapper.ts`), as well as an `example` folder to quickly get started with the integration.
 
-The project overall architecture is ilustrated in the following diagram:
+The project overall architecture is illustrated in the following diagram:
 
 <p align="center">
   <img alt="Overview" src="./diagram.png" width="720">

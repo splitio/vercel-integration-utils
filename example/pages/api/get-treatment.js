@@ -8,6 +8,10 @@ import { createClient } from '@vercel/edge-config';
 // @REPLACE with the feature flag name you want to evaluate
 const FEATURE_FLAG_NAME = 'test_split';
 
+// Creates a client which knows how to read from Edge Config
+// This client is defined outside of the handler so that it can be reused across requests
+const edgeConfigClient = createClient(process.env.EDGE_CONFIG);
+
 // Run API route as an Edge function rather than a Serverless one, because the SDK uses Fetch API to flush data, which is available in Edge runtime but not in Serverless.
 export const config = { runtime: "edge" };
 
@@ -27,9 +31,8 @@ export default async function handler(req, event) {
       wrapper: EdgeConfigWrapper({
         // The Edge Config item key where Split stores feature flag definitions, specified in the Split integration step
         edgeConfigItemKey: process.env.SPLIT_EDGE_CONFIG_ITEM_KEY,
-        // The Edge Config client. In this case, we are passing the default client
-        // that reads from the Edge Config stored in process.env.EDGE_CONFIG
-        edgeConfig: createClient(process.env.EDGE_CONFIG)
+        // The Edge Config client
+        edgeConfig: edgeConfigClient,
       })
     }),
     // Disable or keep only ERROR log level in production, to minimize performance impact
