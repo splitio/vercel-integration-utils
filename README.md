@@ -28,6 +28,10 @@ The project overall architecture is ilustrated in the following diagram:
     // Deploying as an Edge function here, but you can also use it on Edge middlewares and Serverless functions
     export const config = { runtime: "edge" };
 
+    // Creates a client which knows how to read from Edge Config
+    // This client is defined outside of the handler so that it can be reused across requests
+    const edgeConfigClient = createClient(process.env.EDGE_CONFIG);
+
     export default async function handler(req, event) {
       // Extract user key. In this case from a request query param
       const { searchParams } = new URL(req.url);
@@ -43,9 +47,8 @@ The project overall architecture is ilustrated in the following diagram:
           wrapper: EdgeConfigWrapper({
             // The Edge Config item where Split stores feature flag definitions, specified in the Split integration step
             edgeConfigItemKey: '<YOUR_EDGE_CONFIG_ITEM_KEY>',
-            // The Edge Config client. In this case, we are creating a client that uses the same configuration
-            // than the default client, which reads from the Edge Config stored in process.env.EDGE_CONFIG
-            edgeConfig: createClient(process.env.EDGE_CONFIG)
+            // The Edge Config client
+            edgeConfig: edgeConfigClient,
           })
         }),
         // Disable or keep only ERROR log level in production, to minimize performance impact
