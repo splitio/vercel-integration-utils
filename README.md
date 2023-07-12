@@ -8,7 +8,7 @@ Keeping feature flag definitions within an Edge Config instance enables the Spli
 
 The package includes the storage wrapper module (`src/EdgeConfigWrapper.ts`), as well as an `example` folder to quickly get started with the integration.
 
-The project overall architecture is ilustrated in the following diagram:
+The project overall architecture is illustrated in the following diagram:
 
 <p align="center">
   <img alt="Overview" src="./diagram.png" width="720">
@@ -47,8 +47,7 @@ The project overall architecture is ilustrated in the following diagram:
           wrapper: EdgeConfigWrapper({
             // The Edge Config item where Split stores feature flag definitions, specified in the Split integration step
             edgeConfigItemKey: '<YOUR_EDGE_CONFIG_ITEM_KEY>',
-            // The Edge Config client. In this case, we are passing the default client
-            // that reads from the Edge Config stored in process.env.EDGE_CONFIG
+            // The Edge Config client
             edgeConfig: edgeConfigClient,
           })
         }),
