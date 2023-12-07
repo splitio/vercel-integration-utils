@@ -95,6 +95,17 @@ export function EdgeConfigWrapper(options: {
       return Array.isArray(data[key]) && data[key].includes(item);
     },
 
+    /**
+     * Returns all the items of the `key` set.
+     *
+     * @function getItems
+     * @param {string} key Set key
+     * @returns {Promise<string[]>} A promise that resolves with the list of items. If key does not exist, the result is an empty list.
+     */
+    async getItems(key: string) {
+      return Array.isArray(data[key]) ? data[key] : [];
+    },
+
     // No-op methods: not used by the SDK in partial consumer mode
     async set(key: string, value: string) { throw new Error('SET not implemented'); },
     async getAndSet(key: string, value: string) { throw new Error('GET AND SET not implemented'); },
@@ -103,7 +114,6 @@ export function EdgeConfigWrapper(options: {
     async decr(key: string) { throw new Error('DECR not implemented'); },
     async addItems(key: string, items: string[]) { throw new Error('ADD ITEMS not implemented'); },
     async removeItems(key: string, items: string[]) { throw new Error('REMOVE ITEMS not implemented'); },
-    async getItems(key: string) { throw new Error('GET ITEMS not implemented'); },
     async pushItems(key: string, items: string[]) { throw new Error('PUSH ITEMS not implemented'); },
     async popItems(key: string, count: number) { throw new Error('POP ITEMS not implemented'); },
     async getItemsCount(key: string) { throw new Error('GET ITEMS COUNT not implemented'); },
