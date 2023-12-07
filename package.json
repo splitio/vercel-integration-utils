@@ -14,6 +14,7 @@
   "scripts": {
     "build": "rimraf dist && tsc --declaration --declarationDir dist/types && tsc -m es6 --outDir dist/esm --declaration false",
     "test": "jest",
+    "all": "npm run build && npm run test",
     "publish:rc": "npm run test && npm run build && npm publish --tag rc",
     "publish:stable": "npm run test && npm run build && npm publish"
   },
