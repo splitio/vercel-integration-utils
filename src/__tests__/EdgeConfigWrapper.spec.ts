@@ -43,6 +43,9 @@ async function evaluate(storage: any) {
   // Item contains method
   expect(await storage.itemContains('set', 'item2')).toEqual(true);
   expect(await storage.itemContains('set', 'item4')).toEqual(false);
+
+  // Get items method
+  expect(await storage.getItems('set')).toEqual(['item1', 'item2', 'item3']);
 }
 
 describe('Edge config SDK storage wrapper', () => {
