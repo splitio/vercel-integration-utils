@@ -1,4 +1,7 @@
-1.1.0 (December 12, 2023)
+1.1.1 (July 26, 2024)
+ - Updated some transitive dependencies for vulnerability fixes.
+
+1.1.0 (July 26, 2024)
  - Added the `getItems` method to the EdgeConfigWrapper to support evaluations using flag sets, as provided by the Javascript Browser SDK version 0.13.0 or later.
 
 1.0.1 (July 12, 2023)
