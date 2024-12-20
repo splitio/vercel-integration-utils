@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@splitsoftware/splitio-browserjs": "0.9.6",
-    "@splitsoftware/vercel-integration-utils": "1.0.0",
-    "@vercel/edge-config": "0.2.1",
+    "@splitsoftware/vercel-integration-utils": "1.2.0-rc.0",
+    "@vercel/edge-config": "1.4.0",
     "eslint": "8.35.0",
     "eslint-config-next": "13.2.4",
     "next": "13.2.4",

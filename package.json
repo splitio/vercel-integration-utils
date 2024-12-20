@@ -1,6 +1,6 @@
 {
   "name": "@splitsoftware/vercel-integration-utils",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Split SDK wrapper to integrate with Vercel Edge Config",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/splitio/vercel-integration-utils#readme",
   "peerDependencies": {
-    "@vercel/edge-config": ">=0.1.0 <1.0.0"
+    "@vercel/edge-config": ">=0.1.0 <2.0.0"
   },
   "devDependencies": {
     "@types/jest": "^28.1.8",
