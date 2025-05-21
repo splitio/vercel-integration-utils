@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@splitsoftware/splitio-browserjs": "1.0.1",
+    "@splitsoftware/splitio-browserjs": "1.2.0",
     "@splitsoftware/vercel-integration-utils": "1.2.0",
     "@vercel/edge-config": "1.4.0",
     "eslint": "8.35.0",

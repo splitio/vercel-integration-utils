@@ -1,6 +1,6 @@
 {
   "name": "@splitsoftware/vercel-integration-utils",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Split SDK wrapper to integrate with Vercel Edge Config",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",

@@ -3,10 +3,10 @@ import type { EdgeConfigClient } from '@vercel/edge-config';
 /**
  * Creates a storage wrapper instance for Vercel Edge Config.
  *
- * @param {Object} options - The configuration options.
- * @param {string} options.edgeConfigItemKey - Item key used to get Split feature flag definitions from Edge Config.
- * @param {EdgeConfigClient} options.edgeConfig - The Edge Config client instance.
- * @returns - A storage wrapper instance.
+ * @param options - The configuration options.
+ * @param options.edgeConfigItemKey - Item key used to get Split feature flag definitions from Edge Config.
+ * @param options.edgeConfig - The Edge Config client instance.
+ * @returns A storage wrapper instance.
  */
 export function EdgeConfigWrapper(options: {
   edgeConfigItemKey: string;
@@ -50,9 +50,8 @@ export function EdgeConfigWrapper(options: {
     /**
      * Get the value of given `key`.
      *
-     * @function get
-     * @param {string} key Item to retrieve
-     * @returns {Promise<string | null>} A promise that resolves with the element value associated with the specified `key`,
+     * @param key - Item to retrieve
+     * @returns A promise that resolves with the element value associated with the specified `key`,
      * or null if the key does not exist.
      */
     async get(key: string) {
@@ -62,9 +61,8 @@ export function EdgeConfigWrapper(options: {
     /**
      * Returns all keys matching the given prefix.
      *
-     * @function getKeysByPrefix
-     * @param {string} prefix String prefix to match
-     * @returns {Promise<string[]>} A promise that resolves with the list of keys that match the given `prefix`.
+     * @param prefix - String prefix to match
+     * @returns A promise that resolves with the list of keys that match the given `prefix`.
      */
     async getKeysByPrefix(prefix: string) {
       return Object.keys(data).filter((key) => key.startsWith(prefix));
@@ -73,9 +71,8 @@ export function EdgeConfigWrapper(options: {
     /**
      * Returns the values of all given `keys`.
      *
-     * @function getMany
-     * @param {string[]} keys List of keys to retrieve
-     * @returns {Promise<(string | null)[]>} A promise that resolves with the list of items associated with the specified list of `keys`.
+     * @param keys - List of keys to retrieve
+     * @returns A promise that resolves with the list of items associated with the specified list of `keys`.
      * For every key that does not hold a string value or does not exist, null is returned.
      */
     async getMany(keys: string[]) {
@@ -85,10 +82,9 @@ export function EdgeConfigWrapper(options: {
     /**
      * Returns if item is a member of a set.
      *
-     * @function itemContains
-     * @param {string} key Set key
-     * @param {string} item Item value
-     * @returns {Promise<boolean>} A promise that resolves with true boolean value if `item` is a member of the set stored at `key`,
+     * @param key - Set key
+     * @param item - Item value
+     * @returns A promise that resolves with true boolean value if `item` is a member of the set stored at `key`,
      * or false if it is not a member or `key` set does not exist.
      */
     async itemContains(key: string, item: string) {
@@ -98,9 +94,8 @@ export function EdgeConfigWrapper(options: {
     /**
      * Returns all the items of the `key` set.
      *
-     * @function getItems
-     * @param {string} key Set key
-     * @returns {Promise<string[]>} A promise that resolves with the list of items. If key does not exist, the result is an empty list.
+     * @param key - Set key
+     * @returns A promise that resolves with the list of items. If key does not exist, the result is an empty list.
      */
     async getItems(key: string) {
       return Array.isArray(data[key]) ? data[key] : [];
