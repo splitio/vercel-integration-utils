@@ -55,9 +55,9 @@ The project overall architecture is illustrated in the following diagram:
         debug: ErrorLogger()
       }).client();
 
-      // Wait until the SDK is ready or timeout
+      // Wait until the SDK is ready or times out
       try {
-        await client.waitReady();
+        await client.whenReady();
       } catch (e) {
         // SDK timed out. Treatment evaluations will fall back to 'control'.
         // This should not happen if Edge Config is properly configured and synchronized.
