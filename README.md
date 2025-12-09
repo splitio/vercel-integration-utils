@@ -55,12 +55,13 @@ The project overall architecture is illustrated in the following diagram:
         debug: ErrorLogger()
       }).client();
 
-      // Wait until the SDK is ready or timed out. If timeout occurs, treatment evaluations will default to 'control'.
-      // A timeout should not occur if Edge Config is properly configured and synchronized.
-      await new Promise(res => {
-        client.on(client.Event.SDK_READY, res);
-        client.on(client.Event.SDK_READY_TIMED_OUT, res);
-      });
+      // Wait until the SDK is ready or times out
+      try {
+        await client.whenReady();
+      } catch (e) {
+        // SDK timed out. Treatment evaluations will fall back to 'control'.
+        // This should not happen if Edge Config is properly configured and synchronized.
+      }
 
       const treatment = await client.getTreatment('SOME_FEATURE_FLAG');
 
