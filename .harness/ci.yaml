@@ -1,0 +1,63 @@
+pipeline:
+  name: vercel-integration-utils
+  identifier: vercelintegrationutils
+  projectIdentifier: Harness_Split
+  orgIdentifier: PROD
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: fmegithubharnessgitops
+        repoName: vercel-integration-utils
+        build: <+input>
+  stages:
+    - stage:
+        name: Test and Build
+        identifier: Test_and_Build
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          caching:
+            enabled: true
+            override: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec:
+              size: small
+              imageSpec:
+                imageName: ubuntu-latest
+          execution:
+            steps:
+              - step:
+                  type: Action
+                  name: Set up Node.js
+                  identifier: Set_up_Nodejs
+                  spec:
+                    uses: dcodeIO/setup-node-nvm@master
+                    with:
+                      node-version: lts/*
+              - step:
+                  type: Run
+                  name: npm ci
+                  identifier: npm_ci
+                  spec:
+                    shell: Sh
+                    command: npm ci
+              - step:
+                  type: Run
+                  name: npm run test
+                  identifier: npm_run_test
+                  spec:
+                    shell: Sh
+                    command: npm run test
+              - step:
+                  type: Run
+                  name: npm run build
+                  identifier: npm_run_build
+                  spec:
+                    shell: Sh
+                    command: npm run build
