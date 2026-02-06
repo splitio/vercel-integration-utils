@@ -1,0 +1,15 @@
+inputSet:
+  name: vercel-integration-utils
+  tags: {}
+  identifier: vercelintegrationutils
+  orgIdentifier: PROD
+  projectIdentifier: Harness_Split
+  pipeline:
+    identifier: vercelintegrationutils
+    properties:
+      ci:
+        codebase:
+          build:
+            type: branch
+            spec:
+              branch: <+trigger.branch>
